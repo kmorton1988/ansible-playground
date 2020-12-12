@@ -1,0 +1,35 @@
+---
+- hosts: all
+  remote_user: root
+  tasks:
+  
+    - name: update all packages
+      yum:
+        name: '*'
+        state: latest
+
+    - name: install prerequisites
+      yum: 
+        name: ['epel-release','git']
+        state: present
+
+    - name: Install libselinux-python
+      yum:
+        name: libselinux-python3
+        state: latest
+      
+    - name: Install webserver and support apps
+      yum: 
+        name: ['nginx','php-fpm','mysql-server','php-cli','python3-mysqlclient']
+        enablerepo: epel-testing
+        state: latest
+    
+    - name: enable services
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      with_items:
+        - nginx
+        - mysqld
+        - php-fpm
